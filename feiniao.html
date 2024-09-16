@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞鸟专属网站导航</title>
+    <!-- 添加桌面图标（Favicon） -->
+    <link rel="icon" href="https://c-ssl.duitang.com/uploads/blog/202111/23/20211123221657_5eedc.jpg" type="image/png"> <!-- 将此链接替换为您的头像链接 -->
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('https://pic4.zhimg.com/v2-e94f43e8e398194bac4c7a38d402c59b_r.jpg') no-repeat center center fixed; /* 更换为您的背景图片 URL */
+            background-size: cover;
+            color: #fff;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            position: sticky;
+            top: 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: inline-block; /* 确保链接显示为块元素 */
+        }
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .add-site {
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .add-site input {
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 200px; /* 设置输入框宽度 */
+        }
+        .add-site button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+        .add-site button:hover {
+            background-color: #0056b3;
+        }
+        .links {
+            text-align: center;
+            margin: 10px 0; /* 添加导航链接的外边距 */
+        }
+        .link-item {
+            margin: 10px 0; /* 为每个链接项目增加上下间距 */
+        }
+        .delete-button {
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #FF6347; /* 红色 */
+            color: #fff;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>自定义网站导航</h1>
+    <nav>
+        <div class="links" id="site-links">
+            <!-- 动态添加链接将在这里显示 -->
+        </div>
+    </nav>
+    <div class="add-site">
+        <input type="text" id="site-name" placeholder="网站名称" />
+        <input type="text" id="site-url" placeholder="网站 URL" />
+        <button onclick="addSite()">添加网站</button>
+    </div>
+</header>
+
+<script>
+    // 从localStorage加载数据
+    function loadSites() {
+        const sites = JSON.parse(localStorage.getItem('sites')) || [];
+        sites.forEach(site => addSiteToDOM(site.name, site.url));
+    }
+
+    // 将网站添加到DOM
+    function addSiteToDOM(name, url) {
+        const siteLinksDiv = document.getElementById('site-links');
+        const newLink = document.createElement('div');
+        newLink.className = "link-item"; // 给每个链接项目添加类名以应用样式
+        newLink.innerHTML = `
+            <a href="${url}" target="_blank">${name}</a>
+            <button class="delete-button" onclick="deleteSite('${url}')">删除</button>
+        `;
+        siteLinksDiv.appendChild(newLink);
+    }
+
+    // 添加网站
+    function addSite() {
+        const siteName = document.getElementById('site-name').value;
+        const siteUrl = document.getElementById('site-url').value;
+        
+        if (siteName && siteUrl) {
+            // 存储在localStorage
+            const sites = JSON.parse(localStorage.getItem('sites')) || [];
+            sites.push({ name: siteName, url: siteUrl });
+            localStorage.setItem('sites', JSON.stringify(sites));
+
+            addSiteToDOM(siteName, siteUrl);
+
+            // 清空输入框
+            document.getElementById('site-name').value = '';
+            document.getElementById('site-url').value = '';
+        } else {
+            alert("请填写网站名称和 URL");
+        }
+    }
+
+    // 删除网站
+    function deleteSite(url) {
+        let sites = JSON.parse(localStorage.getItem('sites')) || [];
+        // 过滤掉要删除的网站
+        sites = sites.filter(site => site.url !== url);
+        localStorage.setItem('sites', JSON.stringify(sites));
+        renderSites();
+    }
+
+    // 渲染所有网站
+    function renderSites() {
+        const siteLinksDiv = document.getElementById('site-links');
+        siteLinksDiv.innerHTML = ''; // 清空现有链接
+        loadSites(); // 重新加载
+    }
+
+    // 页面加载时加载已存储链接
+    window.onload = loadSites;
+</script>
+
+</body>
+</html>
